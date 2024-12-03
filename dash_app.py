@@ -2,6 +2,8 @@ import dash
 from dash import dcc, html, Input, Output, State
 import logic  # Assuming the logic file is named logic.py and in the same directory
 
+user = None
+passw = None
 # Initialize Dash app
 app = dash.Dash(__name__)
 
@@ -21,7 +23,7 @@ def calculate_bundle_costs():
     bundle_costs = {}
     for bundle_name, tickers in bundles.items():
         # Fetch data for the bundle
-        data = logic.fetch_data(tickers, logic.benchmark_ticker)
+        data = logic.fetch_data(tickers, logic.benchmark_ticker, "2010-01-01", True, user, passw)
 
         # Calculate bundle cost as the sum of the last available prices of the ETFs
         bundle_base_cost = data.iloc[-1].sum()
@@ -90,9 +92,10 @@ def handle_page_navigation(*args):
         button_index = int(trigger_id.split("-")[1])
         bundle_name = list(bundles.keys())[button_index]
         tickers = bundles[bundle_name]
-
+        global recall_user
+        global recall_passw
         # Fetch data and metrics
-        data = logic.fetch_data(tickers, logic.benchmark_ticker)
+        data = logic.fetch_data(tickers, logic.benchmark_ticker, "2010-01-01", True, user, passw)
         trailing_returns_df = logic.calculate_trailing_returns(data)
         risk_stats_df = logic.calculate_risk_statistics(data)
         dividends_df = logic.calculate_dividend_info(tickers, data)
@@ -131,6 +134,7 @@ def handle_page_navigation(*args):
 
         # Redirect back to the first page
         return {"display": "block"}, {"display": "none"}, "", {}, "", pledge_summary
+
 
 if __name__ == "__main__":
     app.run_server(debug=True)
