@@ -1,6 +1,7 @@
 Project Description
 ------------------
-TODO
+This project is a Dash-powered crowdfunding investment platfom enabling users to explore investment bundles with detailed metrics and visualizations, pledge variable amounts towards targets, and experience dynamic updates and seamless navigation between selection and pledge interfaces.
+
 ------------------
 
 To Use
