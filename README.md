@@ -1,55 +1,24 @@
-import yfinance as yf
-import pandas as pd
-import numpy as np
+Project Description
+------------------
+This project is a Dash-powered crowdfunding investment platfom enabling users to explore investment bundles with detailed metrics and visualizations, pledge variable amounts towards targets, and experience dynamic updates and seamless navigation between selection and pledge interfaces.
 
-# Define ETF tickers
-tickers = ['DBC', 'GSG', 'GLD', 'DIA', 'SPY', 'GOVT', 'FBND', 'SCHZ']
+------------------
 
-# Define benchmark for comparison
-benchmark_ticker = 'SPY'
+To Use
+------------------
+1) Download zip file and extract project files
+2) Open in Visual Studio Code
+3) Install all required libraries (NOTE! You must install tabulate "pip install tabulate" for the dash app to work)
+4) Either a) add your WRDS credentials to "credentials.txt" in the format provided or b) the code will load from yfinance instead
+5) Open "dash_app.py" and run this file in VSCode
+6) Look for
 
-# Download historical data for ETFs and benchmark
-data = yf.download(tickers + [benchmark_ticker], start="2010-01-01", progress=False)['Adj Close']
+"Dash is running on http://127.0.0.1:8050/
 
-# Calculate daily returns
-daily_returns = data.pct_change()
+ * Serving Flask app 'dash_app'
+ * Debug mode: on"
 
-# Calculate trailing returns
-trailing_returns = {
-    '1 Month': data.pct_change(periods=21).iloc[-1],
-    '3 Month': data.pct_change(periods=63).iloc[-1],
-    '1 Year': data.pct_change(periods=252).iloc[-1],
-    '3 Year': data.pct_change(periods=252 * 3).iloc[-1]
-}
-
-# Convert trailing returns to DataFrame
-trailing_returns_df = pd.DataFrame(trailing_returns).T
-
-# Calculate risk statistics
-risk_stats = {
-    'Annualized Volatility': daily_returns.std() * np.sqrt(252),
-    'Sharpe Ratio': (daily_returns.mean() * 252) / (daily_returns.std() * np.sqrt(252)),
-    'Max Drawdown': data.div(data.cummax()).min() - 1
-}
-risk_stats_df = pd.DataFrame(risk_stats)
-
-# Fetch dividend information
-dividends = {}
-for ticker in tickers:
-    etf = yf.Ticker(ticker)
-    div = etf.dividends
-    dividends[ticker] = {
-        'Dividend Yield (%)': (div.sum() / data[ticker].iloc[-1]) * 100 if not div.empty else 0,
-        'Annual Payout ($)': div.sum() if not div.empty else 0
-    }
-dividends_df = pd.DataFrame(dividends).T
-
-# Show results to user
-print("Trailing Returns:")
-print(trailing_returns_df)
-
-print("\nRisk Statistics:")
-print(risk_stats_df)
-
-print("\nDividend Information:")
-print(dividends_df)
+ in the terminal, or visit the link above to see dash page
+ 7) Select a bundle and choose an amount to pledge
+ 8) To return to the bundle selection page, simply pledge "0" and it will return
+------------------

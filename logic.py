@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.io as pio
+import database_loader
 
 pio.renderers.default = 'browser'
 
@@ -11,10 +12,19 @@ pio.renderers.default = 'browser'
 tickers = ['DBC', 'GSG', 'GLD', 'DIA', 'SPY', 'GOVT', 'FBND', 'SCHZ']
 benchmark_ticker = 'SPY'
 
-def fetch_data(tickers, benchmark_ticker, start_date="2010-01-01"):
-    """Fetch historical price data for ETFs and benchmark."""
-    data = yf.download(tickers + [benchmark_ticker], start=start_date, progress=False)['Adj Close']
-    return data
+def fetch_data(tickers, benchmark_ticker, start_date="2010-01-01", api = True, u= None, p=None):
+    if api == False:
+        """Fetch historical price data for ETFs and benchmark."""
+        data = yf.download(tickers + [benchmark_ticker], start=start_date, progress=False)['Adj Close']
+        #print(data.head())
+        return data
+    else:
+        data = database_loader.fetch_live_data_from_api(tickers, start_date, benchmark_ticker, u, p)
+        if data == "error":
+            data = yf.download(tickers + [benchmark_ticker], start=start_date, progress=False)['Adj Close']
+        #print(data.head())
+        return data
+
 
 def calculate_trailing_returns(data):
     """Calculate trailing returns for 1 month, 3 months, 1 year, and 3 years."""
